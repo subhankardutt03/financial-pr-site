@@ -9,5 +9,7 @@ Route::controller(AdminController::class)
     ->as('admin.')
     ->group(function () {
         Route::get('/login', 'LoginPage')->name('login.page');
-        Route::post('/login', 'Login')->name('login');
+        Route::match(['get', 'post'], '/login/owner', 'Login')->name('login');
+        Route::get('/dashboard', 'Dashboard')->name('dashboard')->middleware('admin');
+        Route::get('/logout', 'Logout')->name('logout')->middleware('admin');
     });

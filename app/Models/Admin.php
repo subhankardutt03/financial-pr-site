@@ -12,9 +12,16 @@ use Laravel\Sanctum\HasApiTokens;
 class Admin extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
-    public $table = "admins";
     protected $guard = "admin";
-    protected $guarded = [];
+
+    protected $fillable = [
+        'name',
+        'username',
+        'email',
+        'password',
+        'status',
+    ];
+
 
     /**
      * The attributes that are mass assignable.
@@ -41,4 +48,10 @@ class Admin extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function adminDeviceLogin()
+    {
+        return $this->hasOne(AdminDeviceLogin::class);
+    }
 }

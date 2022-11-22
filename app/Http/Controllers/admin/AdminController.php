@@ -11,26 +11,41 @@ class AdminController extends Controller
 {
     public function LoginPage()
     {
-        return view('admin.login');
+        return view('admin.login')->with('success', 'This is login page');
     }
 
     public function Login(Request $request)
     {
-        $validate = $request->validate([
-            'email' => 'required|email|unique:admins',
-            'password' => 'required'
-        ]);
+        $check = $request->all();
+        // $validate = $request->validate([
+        //     'email' => 'required|email|unique:admins',
+        //     'password' => 'required'
+        // ]);
 
-        // dd($request->all());
-
-        if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
-            $user = Auth::guard('admin')->user();
-            dd($user);
-            Admin::where('email', $user->email)->update([
+        if (Auth::guard('admin')->attempt(['email' => $check['email'], 'password' => $check['password']])) {
+            $admin = Auth::guard('admin')->user();
+            Admin::where('email', $admin->email)->update([
                 'status' => 'active'
             ]);
+            return redirect()->route('admin.dashboard')->with('success', 'you have loggedIn successfully');
         } else {
-            dd('jhgjyfgjhf');
+            return back()->with('error', 'Please check your given credential');
         }
+    }
+
+    public function Dashboard()
+    {
+        return view('admin.dashboard');
+    }
+
+    public function Logout()
+    {
+        $admin = Auth::guard('admin')->user();
+        Auth::guard('admin')->logout();
+        Admin::where('email', $admin->email)->update([
+            'status' => 'inactive'
+        ]);
+
+        return redirect()->route('admin.login.page')->with('success', 'Admin logged out successfully');
     }
 }
